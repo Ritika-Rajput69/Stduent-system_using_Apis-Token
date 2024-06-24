@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Success</title>
+</head>
+<body>
+    <h2>Login Successful</h2>
+    
+    <p>Access Token: {{ access_token }}</p>
+    <p>Refresh Token: {{ refresh_token }}</p>
+</body>
+</html>
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#login-form').on('submit', function(event) {
+                event.preventDefault();  // Prevent form from submitting normally
+                
+                var formData = $(this).serialize();  // Serialize form data
+                
+                $.ajax({
+                    url: '{% url "login" %}',  // Replace with your URL name for login_view
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',  // Expect JSON response
+                    success: function(response) {
+                        if (response.token) {
+                            // Token received, store it securely (e.g., in local storage)
+                            localStorage.setItem('jwt_token', response.token);
+                            
+                            // Example: AJAX request to fetch user data after login
+                            $.ajax({
+                                url: 'http://localhost:8000/student/',  // Example endpoint requiring authentication
+                                type: 'GET',
+                                headers: {
+                                    {% comment %} 'Authorization': 'Bearer ' + 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzE4NTEzOTA3LCJpYXQiOjE3MTg1MTAzMDcsImp0aSI6IjNmYTIyZDk2ODg1NzRhZDQ5YzNiMTI0NTg3MTg0ODJhIiwidXNlcl9pZCI6MX0.boZZVPLMQ2JZGKduGMFO73Q8s7eiwoIHqIkH1QyxhZc' {% endcomment %}
+                                    'Authorization': 'Bearer ' + localStorage.getItem('jwt_token')
+                                },
+                                success: function(userData) {
+                                    console.log('User data:', userData);
+                                    // Handle user data
+                                    // Example: Redirect to another page
+                                    window.location.href = '/student/';
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error fetching user data:', error);
+                                    $('#error-message').text('Failed to fetch user data.');
+                                }
+                            });
+                        } else {
+                            // Handle error or invalid credentials
+                            $('#error-message').text(response.error);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error
+                        console.error('Error:', error);
+                        $('#error-message').text('Failed to login. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <h2>Login</h2>
+    <form id="login-form" method="post">
+        {% csrf_token %}
+        <label for="id_username">Username:</label>
+        <input type="text" id="id_username" name="username" required><br><br>
+        
+        <label for="id_password">Password:</label>
+        <input type="password" id="id_password" name="password" required><br><br>
+        
+        <button type="submit">Login</button>
+    </form>
+    <div id="error-message" style="color: red;"></div>
+</body>
+</html>
+ 
+
+ 
+
+
+
+
+

@@ -1,0 +1,103 @@
+{% comment %} 
+<h1>{{ student.name }}</h1>
+<p>Age: {{ student.age }}</p>
+
+<a href="{% url 'student_update' student.id %}">Edit</a>
+<form action="{% url 'student_delete' student.id %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Delete">
+    {{ redirect_to_login_immediately }}
+</form> {% endcomment %}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ student.name }} Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .info {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .edit-delete {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .edit-delete form {
+            display: inline-block;
+        }
+
+        .edit-delete form input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .edit-delete form input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .edit-delete a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .edit-delete a:hover {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>{{ student.name }}</h1>
+        <p class="info">Age: {{ student.age }}</p>
+
+        <div class="edit-delete">
+            <a href="{% url 'student_update' student.id %}">Edit</a>
+            <form action="{% url 'student_delete' student.id %}" method="post">
+                {% csrf_token %}
+                <input type="submit" value="Delete">
+                {{ redirect_to_login_immediately }}
+            </form>
+        </div>
+    </div>
+</body>
+</html>

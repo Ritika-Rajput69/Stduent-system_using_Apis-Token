@@ -1,0 +1,9 @@
+
+<h1>Confirm Delete</h1>
+<p>Are you sure you want to delete "{{ student.name }}"?</p>
+<form action="{% url 'student_delete' student.id %}" method="post">
+    {% csrf_token %}
+    <input type="submit" value="Yes, delete">
+    {{ redirect_to_login_immediately }}
+</form>
+

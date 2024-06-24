@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .error-message {
+            color: red;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .message {
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 3px;
+        }
+
+        .message.error {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+
+        .message.success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+    </style>
+
+    <!-- Time out message -->
+    {% for message in messages %}
+        <div class="message {{ message.tags }}">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#login-form').on('submit', function(event) {
+                event.preventDefault();  // Prevent form from submitting normally
+                
+                var formData = $(this).serialize();  // Serialize form data
+                
+                $.ajax({
+                    url: '{% url "login" %}',  // Replace with your URL name for login_view
+                    type: 'POST',
+                    data: formData,
+                    dataType: 'json',  // Expect JSON response
+                    success: function(response) {
+                        if (response.token) {
+                            // Token received, store it securely (e.g., in local storage)
+                            localStorage.setItem('jwt_token', response.token);
+                            
+                            // Example: AJAX request to fetch user data after login
+                            $.ajax({
+                                url: 'http://127.0.0.1:8000/student/',  // Example endpoint requiring authentication
+                                type: 'GET',
+                                headers: {
+                                    'Authorization': 'Bearer ' + localStorage.getItem('jwt_token')
+                                },
+                                success: function(userData) {
+                                    console.log('User data:', userData);
+                                    // Handle user data
+                                    // Example: Redirect to another page
+                                    window.location.href = '/student/';
+                                },
+                                error: function(xhr, status, error) {
+                                    console.error('Error fetching user data:', error);
+                                    $('#error-message').text('Failed to fetch user data.');
+                                }
+                            });
+                        } else {
+                            // Handle error or invalid credentials
+                            $('#error-message').text(response.error);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        // Handle error
+                        console.error('Error:', error);
+                        $('#error-message').text('Failed to login. Please try again.');
+                    }
+                });
+            });
+
+            // Logout timeout
+            setTimeout(function() {
+                window.location.href = "{% url 'logout' %}";  // Redirect to logout URL
+            }, {{ SESSION_EXPIRE_SECONDS }} * 1000);  // Convert seconds to milliseconds
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h2>Login</h2>
+        <form id="login-form" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Username:</label>
+                <input type="text" id="id_username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="id_password">Password:</label>
+                <input type="password" id="id_password" name="password" required>
+            </div>
+            <button type="submit">Login</button>
+        </form>
+        <div id="error-message" class="error-message"></div>
+    </div>
+</body>
+</html>

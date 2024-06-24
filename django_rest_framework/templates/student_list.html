@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f2f2f2;
+        }
+
+        .add-student {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Student List</h1>
+        {% comment %} <ul>
+        {% for entry in student_list %}
+            <li><a href="{% url 'student_detail' entry.student.id %}">{{ entry.student.name }}</a></li>
+        {% endfor %}
+        </ul> {% endcomment %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Serial No.</th>
+                    <th>Name</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for entry in student_list %}
+                <tr>
+                    <td>{{ entry.index }}</td>
+                    <td><a href="{% url 'student_detail' entry.student.id %}">{{ entry.student.name }}</a></td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <div class="add-student">
+            <a href="{% url 'student_create' %}">Add New Student</a>
+        </div>
+        {% if redirect_to_login_immediately %}
+            <p>{{ redirect_to_login_immediately }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>
